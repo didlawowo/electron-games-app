@@ -9,7 +9,7 @@ interface Api {
     login: (credentials: { username: string; password: string }) => Promise<{ success: boolean; error?: string }>;
     getGames: () => Promise<GameType[]>;
 }
-export { };
+
 // 🔑 Extension de la window globale
 declare global {
     interface Window {
@@ -19,43 +19,61 @@ declare global {
 
 // 🔄 Attendre que le DOM soit chargé
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🔄 DOM loaded, setting up event listeners');
+    
     // 🔐 Login handler
-    document.getElementById('loginButton')?.addEventListener('click', async () => {
-        const username = (document.getElementById('username') as HTMLInputElement).value;
-        const password = (document.getElementById('password') as HTMLInputElement).value;
+    const loginButton = document.getElementById('loginButton');
+    if (loginButton) {
+        loginButton.addEventListener('click', async () => {
+            console.log('🔐 Login button clicked');
+            const username = (document.getElementById('username') as HTMLInputElement).value;
+            const password = (document.getElementById('password') as HTMLInputElement).value;
 
-        try {
-            const result = await window.api.login({ username, password });
-            if (result.success) {
-                showGamesList();
-            } else {
-                alert('Login failed: ' + (result.error || 'Invalid credentials'));
+            try {
+                console.log('🌐 Sending login request for user:', username);
+                const result = await window.api.login({ username, password });
+                if (result.success) {
+                    console.log('✅ Login successful');
+                    showGamesList();
+                } else {
+                    console.log('❌ Login failed:', result.error);
+                    alert('Login failed: ' + (result.error || 'Invalid credentials'));
+                }
+            } catch (error) {
+                console.error('🚨 Login error:', error);
+                alert('An error occurred during login');
             }
-        } catch (error) {
-            console.error('Login error:', error);
-            alert('An error occurred during login');
-        }
-    });
+        });
+    } else {
+        console.error('🚨 Login button not found in DOM');
+    }
 
     // 🚪 Logout handler
-    document.getElementById('logoutButton')?.addEventListener('click', () => {
-        document.getElementById('loginForm')!.classList.remove('hidden');
-        document.getElementById('gamesList')!.classList.add('hidden');
-
-        (document.getElementById('username') as HTMLInputElement).value = '';
-        (document.getElementById('password') as HTMLInputElement).value = '';
-    });
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            console.log('🚪 Logout clicked');
+            document.getElementById('loginForm')!.classList.remove('hidden');
+            document.getElementById('gamesList')!.classList.add('hidden');
+            
+            (document.getElementById('username') as HTMLInputElement).value = '';
+            (document.getElementById('password') as HTMLInputElement).value = '';
+        });
+    } else {
+        console.error('🚨 Logout button not found in DOM');
+    }
 });
 
 // 🎮 Games list display
 async function showGamesList(): Promise<void> {
     try {
+        console.log('🎮 Fetching games list');
         document.getElementById('loginForm')!.classList.add('hidden');
         document.getElementById('gamesList')!.classList.remove('hidden');
 
         const games = await window.api.getGames();
         const gamesContainer = document.getElementById('games')!;
-
+        
         gamesContainer.innerHTML = games
             .map((game: GameType) => `
                 <div class="game-item">
@@ -64,8 +82,12 @@ async function showGamesList(): Promise<void> {
                 </div>
             `)
             .join('');
+        console.log('✅ Games list displayed');
     } catch (error) {
-        console.error('Error loading games:', error);
+        console.error('🚨 Error loading games:', error);
         alert('Failed to load games list');
     }
 }
+
+// Nécessaire pour que TypeScript traite ce fichier comme un module
+export {};
