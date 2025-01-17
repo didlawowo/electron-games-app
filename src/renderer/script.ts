@@ -17,23 +17,35 @@ declare global {
     }
 }
 
-// 🔐 Login handler
-async function handleLogin(): Promise<void> {
-    const username = (document.getElementById('username') as HTMLInputElement).value;
-    const password = (document.getElementById('password') as HTMLInputElement).value;
+// 🔄 Attendre que le DOM soit chargé
+document.addEventListener('DOMContentLoaded', () => {
+    // 🔐 Login handler
+    document.getElementById('loginButton')?.addEventListener('click', async () => {
+        const username = (document.getElementById('username') as HTMLInputElement).value;
+        const password = (document.getElementById('password') as HTMLInputElement).value;
 
-    try {
-        const result = await window.api.login({ username, password });
-        if (result.success) {
-            showGamesList();
-        } else {
-            alert('Login failed: ' + (result.error || 'Invalid credentials'));
+        try {
+            const result = await window.api.login({ username, password });
+            if (result.success) {
+                showGamesList();
+            } else {
+                alert('Login failed: ' + (result.error || 'Invalid credentials'));
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('An error occurred during login');
         }
-    } catch (error) {
-        console.error('Login error:', error);
-        alert('An error occurred during login');
-    }
-}
+    });
+
+    // 🚪 Logout handler
+    document.getElementById('logoutButton')?.addEventListener('click', () => {
+        document.getElementById('loginForm')!.classList.remove('hidden');
+        document.getElementById('gamesList')!.classList.add('hidden');
+
+        (document.getElementById('username') as HTMLInputElement).value = '';
+        (document.getElementById('password') as HTMLInputElement).value = '';
+    });
+});
 
 // 🎮 Games list display
 async function showGamesList(): Promise<void> {
@@ -56,13 +68,4 @@ async function showGamesList(): Promise<void> {
         console.error('Error loading games:', error);
         alert('Failed to load games list');
     }
-}
-
-// 🚪 Logout handler
-function handleLogout(): void {
-    document.getElementById('loginForm')!.classList.remove('hidden');
-    document.getElementById('gamesList')!.classList.add('hidden');
-
-    (document.getElementById('username') as HTMLInputElement).value = '';
-    (document.getElementById('password') as HTMLInputElement).value = '';
 }

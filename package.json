@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "main": "dist/main.js",
   "scripts": {
-    "start": "tsc && electron .",
-    "build": "tsc",
+    "clean": "rm -rf dist",
+    "copy-files": "cp src/renderer/*.html src/renderer/*.css dist/renderer/",
+    "build": "npm run clean && tsc && npm run copy-files",
+    "start": "npm run build && electron .",
     "watch": "tsc -w"
   },
   "devDependencies": {
