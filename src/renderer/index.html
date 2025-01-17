@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game List App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="loginForm" class="container">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="handleLogin()">Login</button>
+    </div>
+
+    <div id="gamesList" class="container hidden">
+        <h2>Games List</h2>
+        <div id="games"></div>
+        <button onclick="handleLogout()">Logout</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
